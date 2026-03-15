@@ -1,1 +1,40 @@
-
+import streamlit as st
+from datetime import date
+# Uygulama Başlığı ve Görsel Ayarlar
+st.set_page_config(page_title="Malzeme İade Formu", page_icon="🏗️")
+st.title("🏗️ Malzeme İade Bildirim Sistemi")
+st.write("Lütfen iade etmek istediğiniz malzemeler için aşağıdaki formu eksiksiz doldurunuz.")
+# Form Başlangıcı
+with st.form("iade_formu", clear_on_submit=True):
+    st.subheader("Müşteri ve İletişim Bilgileri")
+    col1, col2 = st.columns(2)
+    with col1:
+        musteri_adi = st.text_input("Müşteri / Firma Adı *")
+    with col2:
+        yetkili_kisi = st.text_input("İlgili Kişi (Ad-Soyad) *")
+    iletisim_no = st.text_input("Cep Telefonu / İletişim Numarası *")
+    st.divider()
+    st.subheader("İade Detayları")
+    col3, col4 = st.columns(2)
+    with col3:
+        iade_tarihi = st.date_input("İade Edilecek Tarih", min_value=date.today())
+    with col4:
+        depo_secimi = st.selectbox(
+            "İade Edilecek Depo *",
+            ["Gebze Depo", "Gaziantep Şube", "İzmir Depo", "Ankara Lojistik"]
+        )
+    malzeme_detay = st.text_area("İade Edilecek Malzemeler (Örn: 50 adet VT20 Kiriş, 20 adet Pano)")
+    # Dosya/Fotoğraf Yükleme Alanı
+    yuklenen_dosya = st.file_uploader("Varsa Sevk İrsaliyesi Fotoğrafı veya Malzeme Listesi Yükleyin", type=['jpg', 'png', 'pdf'])
+    # Form Gönderme Butonu
+    submit_button = st.form_submit_button("İade Talebini Gönder")
+    if submit_button:
+        if musteri_adi and iletisim_no and depo_secimi:
+            # Burada veriler normalde bir veri tabanına veya Excel'e kaydedilir.
+            st.success(f"Sayın {yetkili_kisi}, iade talebiniz başarıyla alınmıştır. {depo_secimi} birimimize bilgi iletildi.")
+            st.info(f"Referans No: RT-{iade_tarihi.strftime('%Y%m%d')}-01")        
+            # Arka planda yapılacak işlemlerin özeti:
+            # 1. Veritabanına kaydet.
+            # 2. İlgili depo sorumlusuna (Lütfi, Halil vb.) mail/bildirim gönder.
+        else:
+            st.error("Lütfen yıldızlı (*) alanları doldurunuz.")
